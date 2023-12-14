@@ -9,7 +9,7 @@ public struct PartialMacro: MemberMacro {
         in context: Context
     ) throws -> [DeclSyntax] where Declaration : DeclGroupSyntax, Context : MacroExpansionContext {
         let _macros: [String]?
-        if case .argumentList(let arguments) = node.argument, let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
+        if case .argumentList(let arguments) = node.arguments, let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
             _macros = arguments[macrosIndex...]
                 .map(\.expression)
                 .compactMap { $0.as(StringLiteralExprSyntax.self) }
@@ -28,19 +28,19 @@ public struct PartialMacro: MemberMacro {
                 fatalError("Unexpected cast fail when kind == .structDecl")
             }
 
-            let structName = declaration.identifier.text
+            let structName = declaration.name.text
             let structVariableName = structName.prefix(1).lowercased() + structName.suffix(structName.count - 1)
 
-            let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
+            let access = declaration.modifiers.first(where: \.isNeededAccessLevelModifier)
             let structProperties = declaration.memberBlock.members.children(viewMode: .all)
-                .compactMap { $0.as(MemberDeclListItemSyntax.self) }
+                .compactMap { $0.as(MemberBlockItemSyntax.self) }
                 .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                 .compactMap { $0.bindings.as(PatternBindingListSyntax.self) }
                 .compactMap {
                     $0.children(viewMode: .all)
                         .compactMap { $0.as(PatternBindingSyntax.self) }
                         // Ignore readonly proeperty
-                        .filter { $0.accessor == nil }
+                        .filter { $0.accessorBlock == nil }
                 }
                 .flatMap { $0 }
 
@@ -59,7 +59,7 @@ public struct PartialMacro: MemberMacro {
             let structRawProperties = requiredStructProperties
                 .map { structProperty in
                     let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
-                    let letOrVar = variableDecl.bindingKeyword.text
+                    let letOrVar = variableDecl.bindingSpecifier.text
                     if structProperty.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
                         return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     } else {
@@ -106,19 +106,19 @@ public struct PartialMacro: MemberMacro {
                 fatalError("Unexpected cast fail when kind == .classDecl")
             }
 
-            let className = declaration.identifier.text
+            let className = declaration.name.text
             let classVariableName = className.prefix(1).lowercased() + className.suffix(className.count - 1)
 
-            let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
+            let access = declaration.modifiers.first(where: \.isNeededAccessLevelModifier)
             let classProperties = declaration.memberBlock.members.children(viewMode: .all)
-                .compactMap { $0.as(MemberDeclListItemSyntax.self) }
+                .compactMap { $0.as(MemberBlockItemSyntax.self) }
                 .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                 .compactMap { $0.bindings.as(PatternBindingListSyntax.self) }
                 .compactMap {
                     $0.children(viewMode: .all)
                         .compactMap { $0.as(PatternBindingSyntax.self) }
                     // Ignore readonly proeperty
-                        .filter { $0.accessor == nil }
+                        .filter { $0.accessorBlock == nil }
                 }
                 .flatMap { $0 }
 
@@ -137,7 +137,7 @@ public struct PartialMacro: MemberMacro {
             let classRawProperties = requiredClassProperties
                 .map { classProperty in
                     let variableDecl = classProperty.parent!.parent!.cast(VariableDeclSyntax.self)
-                    let letOrVar = variableDecl.bindingKeyword.text
+                    let letOrVar = variableDecl.bindingSpecifier.text
                     if classProperty.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
                         return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
                     } else {

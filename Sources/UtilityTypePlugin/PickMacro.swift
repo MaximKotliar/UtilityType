@@ -9,7 +9,7 @@ public struct PickMacro: MemberMacro {
         in context: Context
     ) throws -> [DeclSyntax] where Declaration : DeclGroupSyntax, Context : MacroExpansionContext {
         guard
-            case .argumentList(let arguments) = node.argument,
+            case .argumentList(let arguments) = node.arguments,
             arguments.count >= 2,
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
@@ -19,7 +19,7 @@ public struct PickMacro: MemberMacro {
         }
         
         let _macros: [String]?
-        var _properties: Slice<TupleExprElementListSyntax>
+        var _properties: Slice<LabeledExprListSyntax>
         if let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
             _macros = arguments[macrosIndex...]
                 .map(\.expression)
@@ -55,12 +55,12 @@ public struct PickMacro: MemberMacro {
                 fatalError("Unexpected cast fail when kind == .structDecl")
             }
             
-            let structName = declaration.identifier.text
+            let structName = declaration.name.text
             let structVariableName = structName.prefix(1).lowercased() + structName.suffix(structName.count - 1)
             
-            let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
+            let access = declaration.modifiers.first(where: \.isNeededAccessLevelModifier)
             let structProperties = declaration.memberBlock.members.children(viewMode: .all)
-                .compactMap { $0.as(MemberDeclListItemSyntax.self) }
+                .compactMap { $0.as(MemberBlockItemSyntax.self) }
                 .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                 .compactMap { $0.bindings.as(PatternBindingListSyntax.self) }
                 .compactMap {
@@ -77,7 +77,7 @@ public struct PickMacro: MemberMacro {
             let structRawProperties = targetStructProperties
                 .map { structProperty in
                     let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
-                    let letOrVar = variableDecl.bindingKeyword.text
+                    let letOrVar = variableDecl.bindingSpecifier.text
                     if let access {
                         return "\(access.description)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     } else {
@@ -120,12 +120,12 @@ public struct PickMacro: MemberMacro {
                 fatalError("Unexpected cast fail when kind == .classDecl")
             }
             
-            let className = declaration.identifier.text
+            let className = declaration.name.text
             let classVariableName = className.prefix(1).lowercased() + className.suffix(className.count - 1)
             
-            let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
+            let access = declaration.modifiers.first(where: \.isNeededAccessLevelModifier)
             let classProperties = declaration.memberBlock.members.children(viewMode: .all)
-                .compactMap { $0.as(MemberDeclListItemSyntax.self) }
+                .compactMap { $0.as(MemberBlockItemSyntax.self) }
                 .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                 .compactMap { $0.bindings.as(PatternBindingListSyntax.self) }
                 .compactMap {
@@ -142,7 +142,7 @@ public struct PickMacro: MemberMacro {
             let classRawProperties = targetClassProperties
                 .map { classProperty in
                     let variableDecl = classProperty.parent!.parent!.cast(VariableDeclSyntax.self)
-                    let letOrVar = variableDecl.bindingKeyword.text
+                    let letOrVar = variableDecl.bindingSpecifier.text
                     if let access {
                         return "\(access.description)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
                     } else {

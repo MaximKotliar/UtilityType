@@ -9,7 +9,7 @@ public struct ReturnTypeMacro: PeerMacro {
         in context: Context
     ) throws -> [DeclSyntax] where Context : MacroExpansionContext, Declaration : DeclSyntaxProtocol {
         guard
-            case .argumentList(let arguments) = node.argument, arguments.count > 0,
+            case .argumentList(let arguments) = node.arguments, arguments.count > 0,
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
             let name = string.segments.first
@@ -34,8 +34,8 @@ public struct ReturnTypeMacro: PeerMacro {
         }
         let macros = _macros?.joined(separator: "\n") ?? ""
 
-        let access = funcDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
-        let returnType = funcDecl.signature.output?.returnType ?? TypeSyntax(stringLiteral: "Void")
+        let access = funcDecl.modifiers.first(where: \.isNeededAccessLevelModifier)
+        let returnType = funcDecl.signature.returnClause?.type ?? TypeSyntax(stringLiteral: "Void")
         return [try StructDeclSyntax("\(raw: macros)\n\(access)struct \(name)") {
             DeclSyntax("\(access)\(raw: "typealias RawValue = \(returnType)")")
             DeclSyntax("\(access)\(raw: "let rawValue: RawValue")")

@@ -15,11 +15,11 @@ public macro Required(macros: String... = []) = #externalMacro(module: "UtilityT
 @attached(member, names: arbitrary)
 public macro Partial(macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "PartialMacro")
 
-@attached(member, names: arbitrary)
-public macro Exclude(_ typename: String, exlcudes: String...) = #externalMacro(module: "UtilityTypePlugin", type: "ExcludeMacro")
+//@attached(member, names: arbitrary)
+//public macro Exclude(_ typename: String, exlcudes: String...) = #externalMacro(module: "UtilityTypePlugin", type: "ExcludeMacro")
 
-@attached(member, names: arbitrary)
-public macro Extract(_ typename: String, extracts: String...) = #externalMacro(module: "UtilityTypePlugin", type: "ExtractMacro")
+//@attached(member, names: arbitrary)
+//public macro Extract(_ typename: String, extracts: String...) = #externalMacro(module: "UtilityTypePlugin", type: "ExtractMacro")
 
 @attached(peer, names: arbitrary)
 public macro Parameters(_ typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "ParametersMacro")

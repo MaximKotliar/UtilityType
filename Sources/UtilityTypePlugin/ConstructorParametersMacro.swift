@@ -9,7 +9,7 @@ public struct ConstructorParametersMacro: PeerMacro {
         in context: Context
     ) throws -> [DeclSyntax] where Context : MacroExpansionContext, Declaration : DeclSyntaxProtocol {
         guard
-            case .argumentList(let arguments) = node.argument, arguments.count > 0,
+            case .argumentList(let arguments) = node.arguments, arguments.count > 0,
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
             let name = string.segments.first 
@@ -21,9 +21,9 @@ public struct ConstructorParametersMacro: PeerMacro {
             throw CustomError.message("@ConstructorParameters should attach to `function`)")
         }
 
-        let access = initDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
+        let access = initDecl.modifiers.first(where: \.isNeededAccessLevelModifier)
 
-        let parameters = initDecl.signature.input.parameterList.children(viewMode: .all)
+        let parameters = initDecl.signature.parameterClause.parameters.children(viewMode: .all)
             .compactMap { $0.as(FunctionParameterSyntax.self) }
             .map { functionParameter in
                 if let attributedFunctionParameter = functionParameter.type.as(AttributedTypeSyntax.self) {
@@ -38,16 +38,16 @@ public struct ConstructorParametersMacro: PeerMacro {
             }
 
         let nameText = try name.text
-        let initParams = TypealiasDeclSyntax(
-            modifiers: ModifierListSyntax(access != nil ? [access!] : []),
-            identifier: TokenSyntax(stringLiteral: nameText),
+        let initParams = TypeAliasDeclSyntax(
+            modifiers: DeclModifierListSyntax(access != nil ? [access!] : []),
+            name: TokenSyntax(stringLiteral: nameText),
             initializer: TypeInitializerClauseSyntax(
                 value:
                     TupleTypeSyntax(
                         elements: TupleTypeElementListSyntax(parameters.indices.map { index in
                             let parameter = parameters[index]
                             return TupleTypeElementSyntax(
-                                name: parameter.firstName,
+                                firstName: parameter.firstName,
                                 colon: .colonToken(),
                                 type: parameter.type,
                                 trailingComma: index + 1 == parameters.count ? nil : .commaToken()

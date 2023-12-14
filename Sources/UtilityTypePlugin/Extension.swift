@@ -62,7 +62,7 @@ extension Optional {
     }
 }
 
-extension StringLiteralSegmentsSyntax.Element {
+extension StringLiteralSegmentListSyntax.Element {
     var text: String {
         get throws {
             switch self {
