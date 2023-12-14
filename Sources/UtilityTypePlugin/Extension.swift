@@ -74,3 +74,23 @@ extension StringLiteralSegmentsSyntax.Element {
         }
     }
 }
+
+struct Backported<Base> {
+    let base: Base
+}
+extension String {
+    var backported: Backported<String> { .init(base: self) }
+}
+
+extension Backported where Base == String {
+    
+    func trimmingPrefix(while condition: (Character) -> Bool) -> String {
+        var startIndex = base.startIndex
+        
+        while startIndex < base.endIndex && condition(base[startIndex]) {
+            startIndex = base.index(after: startIndex)
+        }
+        
+        return String(base[startIndex...])
+    }
+}

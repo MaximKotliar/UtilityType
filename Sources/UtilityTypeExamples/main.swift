@@ -12,6 +12,7 @@ public struct Item {
 @Readonly
 @Omit("Omitted", properties: "id")
 @Pick("Picked", properties: "id", "name")
+@Pick("Picked2", properties: "id", "name", "age")
 @Pick("PickedNest", properties: "id", "name", macros: #"@Required"#, #"@Partial"#, #"@Omit("Omitted", properties: "id")"#)
 @Omit("OmittedNest", properties: "name", macros: #"@Required"#, #"@Partial"#, #"@Pick("Picked", properties: "id")"#)
 public struct User {

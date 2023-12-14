@@ -60,7 +60,7 @@ public struct RequiredMacro: MemberMacro {
                 .map { structProperty in
                     let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
-                    return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                    return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                 }
                 .joined()
             let assignedToSelfPropertyStatementsFromDeclaration = structProperties
@@ -138,7 +138,7 @@ public struct RequiredMacro: MemberMacro {
                 .map { classProperty in
                     let variableDecl = classProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
-                    return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
+                    return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
                 }
                 .joined()
             let assignedToSelfPropertyStatementsFromDeclaration = classProperties

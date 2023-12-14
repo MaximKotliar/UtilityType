@@ -78,9 +78,9 @@ public struct OmitMacro: MemberMacro {
                     let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
                     if let access {
-                        return "\(access.description)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                        return "\(access.description)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     } else {
-                        return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                        return "\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     }
                 }
                 .joined()
@@ -143,9 +143,9 @@ public struct OmitMacro: MemberMacro {
                     let variableDecl = classProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
                     if let access {
-                        return "\(access.description)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
+                        return "\(access.description)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
                     } else {
-                        return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
+                        return "\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
                     }
                 }
                 .joined()

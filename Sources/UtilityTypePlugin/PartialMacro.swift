@@ -61,9 +61,9 @@ public struct PartialMacro: MemberMacro {
                     let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
                     if structProperty.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
-                        return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                        return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     } else {
-                        return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)?"
+                        return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(structProperty)?"
                     }
                 }
                 .joined()
@@ -139,9 +139,9 @@ public struct PartialMacro: MemberMacro {
                     let variableDecl = classProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
                     if classProperty.typeAnnotation?.type.is(OptionalTypeSyntax.self) == true {
-                        return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
+                        return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
                     } else {
-                        return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(classProperty)?"
+                        return "\(access)\(letOrVar.backported.trimmingPrefix(while: \.isWhitespace)) \(classProperty)?"
                     }
                 }
                 .joined()
